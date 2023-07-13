@@ -85,7 +85,7 @@ struct boss_high_king_maulgar : public BossAI
                 context.Repeat(35s);
             }).Schedule(0ms, [this](TaskContext context)
             {
-                DoCastVictim(SPELL_ROAR);
+                DoCastSelf(SPELL_ROAR);
                 context.Repeat(20600ms, 29100ms);
             });
         });

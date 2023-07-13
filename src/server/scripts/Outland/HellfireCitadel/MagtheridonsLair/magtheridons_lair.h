@@ -62,6 +62,4 @@ inline AI* GetMagtheridonsLairAI(T* obj)
     return GetInstanceAI<AI>(obj, MagtheridonsLairScriptName);
 }
 
-#define RegisterMagtheridonsLairCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetMagtheridonsLairAI)
-
 #endif
