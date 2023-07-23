@@ -306,8 +306,7 @@ typedef std::unordered_map<uint32, SpellProcEntry> SpellProcMap;
 
 enum EnchantProcAttributes
 {
-    ENCHANT_PROC_ATTR_EXCLUSIVE     = 0x1, // Only one instance of that effect can be active
-    ENCHANT_PROC_ATTR_WHITE_HIT     = 0x2  // Enchant shall only proc off white hits (not abilities)
+    ENCHANT_PROC_ATTR_EXCLUSIVE     = 0x1 // Only one instance of that effect can be active
 };
 
 struct SpellEnchantProcEntry

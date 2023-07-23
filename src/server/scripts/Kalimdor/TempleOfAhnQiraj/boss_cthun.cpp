@@ -620,28 +620,28 @@ struct npc_eye_tentacle : public ScriptedAI
 
     void Reset() override
     {
-        DoZoneInCombat();
         _scheduler.Schedule(500ms, [this](TaskContext /*task*/)
-        {
-            DoCastAOE(SPELL_GROUND_RUPTURE);
-        })
-        .Schedule(5min, [this](TaskContext /*task*/)
-        {
-            me->DespawnOrUnsummon();
-        });
+            {
+                DoCastAOE(SPELL_GROUND_RUPTURE);
+            })
+            .Schedule(5min, [this](TaskContext /*task*/)
+            {
+                me->DespawnOrUnsummon();
+            })
+            .Schedule(1s, 5s, [this](TaskContext context)
+            {
+                if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, NotInStomachSelector()))
+                {
+                    DoCast(target, SPELL_MIND_FLAY);
+                }
+
+                context.Repeat(10s, 15s);
+            });
     }
 
     void JustEngagedWith(Unit* /*who*/) override
     {
-        _scheduler.Schedule(1s, 5s, [this](TaskContext context)
-        {
-            if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, NotInStomachSelector()))
-            {
-                DoCast(target, SPELL_MIND_FLAY);
-            }
-
-            context.Repeat(10s, 15s);
-        });
+        DoZoneInCombat();
     }
 
     void UpdateAI(uint32 diff) override
