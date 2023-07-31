@@ -2478,6 +2478,10 @@ class spell_gen_vehicle_scaling_aura: public AuraScript
 
     bool Load() override
     {
+        //npcbot
+        if (GetCaster() && GetCaster()->IsNPCBot() && GetOwner()->GetTypeId() == TYPEID_UNIT)
+            return true;
+        //end npcbot
         return GetCaster() && GetCaster()->GetTypeId() == TYPEID_PLAYER && GetOwner()->GetTypeId() == TYPEID_UNIT;
     }
 
@@ -2500,7 +2504,19 @@ class spell_gen_vehicle_scaling_aura: public AuraScript
                 break;
         }
 
+        //npcbot
+        /*
+        //end npcbot
         float avgILvl = caster->ToPlayer()->GetAverageItemLevel();
+        //npcbot
+        */
+        float avgILvl;
+        if (caster->GetTypeId() == TYPEID_PLAYER)
+            avgILvl = caster->ToPlayer()->GetAverageItemLevel();
+        else
+            avgILvl = caster->ToCreature()->GetBotAverageItemLevel();
+        //end npcbot
+
         if (avgILvl < baseItemLevel)
             return;                     /// @todo Research possibility of scaling down
 
@@ -3607,6 +3623,11 @@ class spell_gen_tournament_pennant : public AuraScript
 
     bool Load() override
     {
+        //npcbot
+        if (GetCaster() && GetCaster()->IsNPCBot())
+            return true;
+        //end npcbot
+
         return GetCaster() && GetCaster()->GetTypeId() == TYPEID_PLAYER;
     }
 
@@ -4884,6 +4905,39 @@ class spell_gen_shriveling_gaze : public AuraScript
     }
 };
 
+// 38048 - Curse of Pain
+enum CurseOfPain
+{
+    SPELL_CURSE_OF_PAIN           = 38048,
+};
+
+class spell_gen_curse_of_pain : public AuraScript
+{
+    PrepareAuraScript(spell_gen_curse_of_pain);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_CURSE_OF_PAIN });
+    }
+
+    void OnPeriodic(AuraEffect const* /*aurEff*/)
+    {
+        Unit* target = GetTarget();
+        if (target && target->ToPlayer())
+        {
+            if (target->GetHealthPct() < 50.f)
+            {
+                target->RemoveAurasDueToSpell(SPELL_CURSE_OF_PAIN);
+            }
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_gen_curse_of_pain::OnPeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+    }
+};
+
 void AddSC_generic_spell_scripts()
 {
     RegisterSpellScript(spell_silithyst);
@@ -5029,4 +5083,5 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_freezing_circle);
     RegisterSpellScript(spell_gen_threshalisk_charge);
     RegisterSpellScript(spell_gen_shriveling_gaze);
+    RegisterSpellScript(spell_gen_curse_of_pain);
 }
